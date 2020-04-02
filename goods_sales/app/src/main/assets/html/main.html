@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>物品收购管理</TITLE>
+	<link rel="stylesheet" type="text/css" href="css/mint.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+
+	<script src="js/jquery.min-1.11.3.js"></script>
+	<script src="js/JSConstants.js"></script>
+	<script src="js/JSBridge.js"></script>
+	<script src="js/JSBridgeExt.js"></script>
+	<script src="js/vue.min.js"></script>
+	<script src="js/mint.min.js"></script>
+
+	<style type="text/css">
+		body {
+			background-color: #fff;
+		}
+
+		.menu_list {
+			width: 100%;
+			align: center;
+			border-collapse: collapse;
+		}
+
+		.menu_list td {
+			border-collapse: collapse;
+			height: 120px;
+		}
+
+		.menu_list .td1 {
+			border-bottom: 10px solid #fff;
+		}
+
+		.menu_list td div {
+			color: white;
+			font-size: 26px;
+			font-weight: 600;
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			padding-top: 35px;
+			background-color: #607d8b;
+		}
+	</style>
+</HEAD>
+<BODY>
+	<table id="app" class="menu_list">
+		<tr>
+			<td class="td1"><div @click="changePage('sales_info_list.html')">销售管理</div></td>
+		</tr>
+		<tr>
+			<td class="td1"><div @click="changePage('sales_info_stat.html')">销售统计</div></td>
+		</tr>
+		<tr>
+			<td class="td1"><div @click="changePage('sales_navigate.html')">地图导航</div></td>
+		</tr>
+		<tr>
+			<td class="td1"><div @click="changePage('base_data_list.html')">基础数据管理</div></td>
+		</tr>
+		<tr>
+			<td><div @click="exitApp">退出系统</div></td>
+		</tr>
+	</table>
+
+	<script>
+		var vm = new Vue({
+			el: '#app',
+			methods: {
+				changePage: function(pageURL){
+					transferPage(pageURL);
+				},
+				exitApp: function(){
+					if(confirm("确定要退出应用？")){
+						jsBridge.dispatchAction(actionNames.ExitApp, "", "");
+					}
+				}
+			}
+		})
+	</script>
+</BODY>
+</HTML>

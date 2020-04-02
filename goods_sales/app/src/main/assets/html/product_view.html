@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>查看商品</TITLE>
+	<link rel="stylesheet" type="text/css" href="css/mint.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+
+	<script src="js/jquery.min-1.11.3.js"></script>
+	<script src="js/JSConstants.js"></script>
+	<script src="js/JSBridge.js"></script>
+	<script src="js/JSBridgeExt.js"></script>
+	<script src="js/vue.min.js"></script>
+	<script src="js/mint.min.js"></script>
+
+	<style type="text/css">
+		.field-btton-container {
+			margin: 10px 0 10px 0;
+			text-align: center;
+		}
+		
+		.mint-cell:last-child {
+			background-position: initial;
+		}
+	</style>
+</HEAD>
+
+<BODY>
+	<div id="app" class="vue-mint-container">
+		<mt-header fixed title="查看商品">
+			<mt-button icon="back" slot="left" @click="_goback">返回</mt-button>
+		</mt-header>
+
+		<mt-field label="名称" readOnly="true" v-model.trim="name"></mt-field>
+		<mt-field label="零售价(元/斤)" readOnly="true" v-model.trim="price"></mt-field>
+		<mt-field label="团队价(元/斤)" readOnly="true" v-model.trim="group_price"></mt-field>
+
+		<div style="border-bottom:1px solid #d9d9d9; border-top:1px solid #d9d9d9; padding-top: 5px;">
+			<div style="margin-left:10px;">备注</div>
+			<mt-field label="" type="textarea" readOnly="true" rows="15" v-model.trim="comments"></mt-field>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+			    id: "",
+				name: "",
+				price: "",
+				group_price: "",
+				comments: ""
+			},
+			methods: {
+				_goback: function(){
+					transferPage("product_list.html");
+				}
+			}
+		});
+
+		function pageFinishCallback(){
+			vm.id = getPageParameter("id");
+			vm.name = getPageParameter("name");
+			vm.price = getPageParameter("price");
+			vm.group_price = getPageParameter("group_price");
+			vm.comments = getPageParameter("comments");
+		}
+	</script>
+
+</BODY>
+</HTML>

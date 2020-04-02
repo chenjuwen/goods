@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>添加商品</TITLE>
+	<link rel="stylesheet" type="text/css" href="css/mint.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/muse-ui.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+
+	<script src="js/jquery.min-1.11.3.js"></script>
+	<script src="js/JSConstants.js"></script>
+	<script src="js/JSBridge.js"></script>
+	<script src="js/JSBridgeExt.js"></script>
+	<script src="js/vue.min.js"></script>
+	<script src="js/mint.min.js"></script>
+	<script src="js/muse-ui.js"></script>
+
+	<style type="text/css">
+		.field-btton-container {
+			margin: 10px 0 10px 0;
+			text-align: center;
+		}
+		
+		.mint-cell:last-child {
+			background-position: initial;
+		}
+
+		.mu-appbar {
+			height: 40px;
+		}
+		.mu-appbar-title {
+			font-size: 20px;
+		}
+		.mu-flat-button {
+			font-size: 16px;
+		}
+	</style>
+</HEAD>
+
+<BODY>
+	<div id="app" class="vue-mint-container">
+		<mt-header fixed title="添加商品">
+			<mt-button icon="back" slot="left" @click="_goback">返回</mt-button>
+		</mt-header>
+
+		<mt-button slot="right" @click="showProductListDialog" style="margin-left: 10px;">
+			<img src="images/add.png" width="20" height="20">
+		</mt-button>
+
+		<mt-field label="商品名称" readOnly="true" v-model.trim="name"></mt-field>
+		<mt-field label="价格(元)" v-model.trim="price"></mt-field>
+		<mt-field label="重量(斤)" v-model.trim="weight"></mt-field>
+
+		<div class="field-btton-container">
+			<mt-button type="primary" size="large" @click="_save">保存</mt-button>
+		</div>
+
+		<mu-dialog width="360" transition="slide-bottom" fullscreen :open.sync="openFullscreen">
+			<mu-appbar color="primary" title="商品列表">
+				<mu-button slot="right" flat  @click="closeProductListDialog">关闭</mu-button>
+			</mu-appbar>
+			<div style="padding:0px;">
+				<table width="100%" border=1 style="border:1px solid #d9d9d9; border-collapse:collapse;">
+					<tr style="height:40px;">
+						<td align="center">商品名称</td>
+						<td align="center">零售价(元)</td>
+						<td align="center">团队价(元)</td>
+					</tr>
+					<tr @click.stop="_selectRow(item.name, item.price, item.group_price)" v-for="item in productList" style="height:40px;">
+						<td>{{ item.name }}</td>
+						<td>{{ item.price }}</td>
+						<td>{{ item.group_price }}</td>
+					</tr>
+				</table>
+			</div>
+		</mu-dialog>
+	</div>
+
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				salesId: "",
+				sales_type: "",
+
+				name: "",
+				price: "",
+				weight: "",
+
+				openFullscreen: false,
+				productList: [
+					{name:"杂优谷", price:1.50, group_price:1.60},
+					{name:"七三粘", price:1.30, group_price:1.40}
+				]
+			},
+			methods: {
+				_goback: function(){
+					var obj = {"id":vm.salesId, "url":"sales_info_view.html"};
+					jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "getInfo");
+				},
+				closeProductListDialog: function() {
+					this.openFullscreen = false;
+				},
+				showProductListDialog: function(){
+					this.openFullscreen = true;
+				},
+				_selectRow: function(name, price, group_price){
+					this.name = name;
+
+					if(this.sales_type == "1"){ //零售
+						this.price = price;
+					}else{ //团队
+						this.price = group_price;
+					}
+
+					this.openFullscreen = false;
+				},
+				_save: function(){
+					saveData();
+				}
+			}
+		});
+
+		function pageFinishCallback(){
+			vm.salesId = getPageParameter("salesId");
+			vm.sales_type = getPageParameter("sales_type");
+
+			var obj = {};
+			var dataArr = jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "list");
+			vm.productList = jQuery.parseJSON(dataArr);
+		}
+
+		function saveData(){
+			if(vm.name == ""){
+				vm.$toast({
+					message: '请输入商品名称！',
+					duration: 1500
+				});
+				return;
+			}
+
+			if(vm.price == ""){
+				vm.$toast({
+					message: '请输入商品价格！',
+					duration: 1500
+				});
+				return;
+			}
+
+			if(vm.weight == ""){
+				vm.$toast({
+					message: '请输入商品重量！',
+					duration: 1500
+				});
+				return;
+			}
+
+			var obj = {"salesId":vm.salesId, "name":vm.name, "price":vm.price, "weight":vm.weight};
+			var msg = jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "saveSalesProduct");
+			
+			if(msg == "success"){
+				alert("保存成功");
+
+				var obj = {"id":vm.salesId, "url":"sales_info_view.html"};
+				jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "getInfo");
+			}else{
+				alert(msg);
+			}
+		}
+	</script>
+
+</BODY>
+</HTML>

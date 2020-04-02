@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>商品列表</TITLE>
+	<link rel="stylesheet" type="text/css" href="css/mint.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+
+	<script src="js/jquery.min-1.11.3.js"></script>
+	<script src="js/JSConstants.js"></script>
+	<script src="js/JSBridge.js"></script>
+	<script src="js/JSBridgeExt.js"></script>
+	<script src="js/vue.min.js"></script>
+	<script src="js/mint.min.js"></script>
+
+	<style type="text/css">
+		.mint-cell:last-child {
+			background-image: none;
+		}
+		.data-container {
+			border-top: 2px solid #d9d9d9;
+			border-bottom: 2px solid #d9d9d9;
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 17px;
+		}
+
+		.data-container .header{
+			background-color: #ddd;
+			height: 40px;
+		}
+
+		.data-container .data{
+			height: 40px;
+		}
+
+		.data-container .data-td{
+			border-bottom: 1px solid #ddd;
+		}
+	</style>
+</HEAD>
+
+<BODY>
+	<div id="app" class="vue-mint-container">
+		<mt-header fixed title="商品列表">
+			<mt-button icon="back" slot="left" @click="_goback">返回</mt-button>
+			<mt-button slot="right" @click="_addProduct">
+				<img src="images/add.png" width="20" height="20">
+			</mt-button>
+		</mt-header>
+
+		<table class="data-container" border=0>
+			<tr class="header">
+				<td width="20%">名称</td>
+				<td width="30%">零售价</td>
+				<td width="30%">团队价</td>
+				<td width="20%">状态</td>
+			</tr>
+			<tr @click.stop="_cell(item.id)" v-for="item in dataList" class="data">
+				<td class="data-td">{{ item.name }}</td>
+				<td class="data-td">{{ item.price }}</td>
+				<td class="data-td">{{ item.group_price }}</td>
+				<td class="data-td">{{ item.status }}</td>
+			</tr>
+		</table>
+
+		<mt-actionsheet :actions="actionsheetData2" v-model="sheetVisible2"> </mt-actionsheet>
+	</div>
+
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				dataList: [
+				  	//{id:1, name:"杂优", price: 150.00, group_price: 150.00, status:"有效"},{id:2, name:"杂优2", price: 160.00, group_price: 160.00, status:"有效"}
+				],
+
+				dataKey: "",
+
+				sheetVisible2: false,
+				actionsheetData2: [
+					{name:"查看", method:viewProduct},
+					{name:"修改", method:editProduct},
+					{name:"状态置为 [有效]", method:enableProduct},
+					{name:"状态置为 [无效]", method:disableProduct}
+				]
+			},
+			methods: {
+				_goback: function(){
+					transferPage("base_data_list.html");
+				},
+				_addProduct: function(){
+					transferPage("product_add.html");
+				},
+				_cell: function(id){
+					this.sheetVisible2 = true;
+					this.dataKey = id;
+				}
+			}
+		});
+
+		function viewProduct(){
+			var obj = {"id":vm.dataKey, "url":"product_view.html"};
+			jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "detail");
+		}
+
+		function editProduct(){
+			var obj = {"id":vm.dataKey, "url":"product_edit.html"};
+			jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "detail");
+		}
+
+		function enableProduct(){
+			if(confirm("确定状态置为 [有效]？")){
+				var obj = {"id":vm.dataKey, "status":"1"};
+				jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "updateStatus");
+				pageFinishCallback();
+			}
+		}
+
+		function disableProduct(){
+			if(confirm("确定状态置为 [无效]？")){
+				var obj = {"id":vm.dataKey, "status":"0"};
+				jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "updateStatus");
+				pageFinishCallback();
+			}
+		}
+
+		function pageFinishCallback(){
+			var obj = {};
+			var dataArr = jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "list");
+			vm.dataList = jQuery.parseJSON(dataArr);
+		}
+	</script>
+
+</BODY>
+</HTML>

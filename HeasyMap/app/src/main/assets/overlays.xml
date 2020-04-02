@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<overlays>
+    <overlay id="1585620671887">
+        <latitude>22.611338</latitude>
+        <longitude>111.55112</longitude>
+        <address>云浮市罗定市榃碑蓬西南391米</address>
+        <comments><![CDATA[太老爷]]></comments>
+    </overlay>
+    <overlay id="1585622051065">
+        <latitude>22.622954</latitude>
+        <longitude>111.568066</longitude>
+        <address>云浮市罗定市茶岗北467米</address>
+        <comments><![CDATA[爷爷]]></comments>
+    </overlay>
+    <overlay id="1585622385270">
+        <latitude>22.627684</latitude>
+        <longitude>111.551744</longitude>
+        <address>云浮市罗定市梨迳营东南441米</address>
+        <comments><![CDATA[大佬]]></comments>
+    </overlay>
+</overlays>

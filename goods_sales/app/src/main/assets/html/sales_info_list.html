@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<TITLE>订单列表</TITLE>
+	<link rel="stylesheet" type="text/css" href="css/mint.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/common.css" />
+
+	<script src="js/jquery.min-1.11.3.js"></script>
+	<script src="js/JSConstants.js"></script>
+	<script src="js/JSBridge.js"></script>
+	<script src="js/JSBridgeExt.js"></script>
+	<script src="js/vue.min.js"></script>
+	<script src="js/mint.min.js"></script>
+
+	<style type="text/css">
+		.mint-cell:last-child {
+			background-image: none;
+		}
+		.data-container {
+			border-top: 2px solid #d9d9d9;
+			border-bottom: 2px solid #d9d9d9;
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 16px;
+		}
+
+		.data-container .header{
+			background-color: #ddd;
+			height: 40px;
+		}
+
+		.data-container .data{
+			height: 40px;
+		}
+
+		.data-container .data-td{
+			border-bottom: 1px solid #ddd;
+		}
+	</style>
+</HEAD>
+
+<BODY>
+	<div id="app" class="vue-mint-container">
+		<mt-header fixed title="订单列表">
+			<mt-button icon="back" slot="left" @click="_goback">返回</mt-button>
+			<mt-button slot="right" @click="_addSales">
+				<img src="images/add.png" width="20" height="20">
+			</mt-button>
+		</mt-header>
+
+		<table class="data-container" border=0>
+			<tr>
+				<td colspan="3" height="40">
+					<input v-model.trim="queryContent" style="height:30px;" size="30">
+					<input type="button" value="搜索" style="height:30px;" @click="querySales">
+				</td>
+			</tr>
+
+			<tr class="header">
+				<td width="25%">姓名</td>
+				<td width="35%">手机号码</td>
+				<td width="40%">时间</td>
+			</tr>
+			<tr @click.stop="_cell(item.id)" v-for="item in dataList" class="data">
+				<td class="data-td">{{ item.user_name }}</td>
+				<td class="data-td">{{ item.phone }}</td>
+				<td class="data-td">{{ item.create_time }}</td>
+			</tr>
+		</table>
+
+		<mt-actionsheet :actions="actionsheetData2" v-model="sheetVisible2"> </mt-actionsheet>
+	</div>
+
+	<script type="text/javascript">
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				dataList: [
+				  	{id:1, user_name:"张三", phone: "13799999999", create_time:"2020-02-13 16:05"}
+				],
+				queryContent: "",
+
+				dataKey: "",
+
+				sheetVisible2: false,
+				actionsheetData2: [
+					{name:"查看", method:viewSales},
+					{name:"编辑", method:editSales},
+					{name:"删除", method:deleteSales}
+				]
+			},
+			methods: {
+				_goback: function(){
+					backMainPage();
+				},
+				_addSales: function(){
+					transferPage("sales_info_add.html");
+				},
+				_cell: function(id){
+					this.sheetVisible2 = true;
+					this.dataKey = id;
+				},
+				querySales: function(){
+					pageFinishCallback();
+				}
+			}
+		});
+
+		function viewSales(){
+			var obj = {"id":vm.dataKey, "url":"sales_info_view.html"};
+			jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "getInfo");
+		}
+
+		function editSales(){
+			var obj = {"id":vm.dataKey, "url":"sales_info_edit.html"};
+			jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "getInfo");
+		}
+
+		function deleteSales(){
+			if(confirm("确定删除？")){
+				var obj = {"id":vm.dataKey};
+				jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "deleteInfo");
+				pageFinishCallback();
+			}
+		}
+
+		function pageFinishCallback(){
+			var obj = {queryContent: vm.queryContent};
+			var dataArr = jsBridge.dispatchAction("SalesAction", JSON.stringify(obj), "listInfo");
+			vm.dataList = jQuery.parseJSON(dataArr);
+		}
+	</script>
+
+</BODY>
+</HTML>
