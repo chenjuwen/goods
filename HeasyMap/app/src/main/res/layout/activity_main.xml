@@ -53,6 +53,15 @@
                 android:text="清除路径" />
 
             <Button
+                android:id="@+id/btnCompass"
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:background="#90EE90"
+                android:layout_marginLeft="1dp"
+                android:textSize="13dp"
+                android:text="罗盘仪" />
+
+            <Button
                 android:id="@+id/btnRefresh"
                 android:layout_width="60dp"
                 android:layout_height="50dp"

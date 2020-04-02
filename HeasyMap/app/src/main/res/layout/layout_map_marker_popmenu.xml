@@ -80,9 +80,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:textSize="12sp"
+                android:textSize="15sp"
                 android:enabled="false"
-                android:textColor="@color/blue"
+                android:textColor="@color/red"
                 android:inputType="textPersonName" />
         </LinearLayout>
 
@@ -145,28 +145,35 @@
 
         <Button
             android:id="@+id/btnSave"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="35dp"
             android:background="@color/button1"
             android:text="保存"/>
 
         <Button
             android:id="@+id/btnDelete"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="35dp"
             android:background="@color/button1"
             android:text="删除" />
 
         <Button
             android:id="@+id/btnRoute"
-            android:layout_width="80dp"
+            android:layout_width="60dp"
             android:layout_height="35dp"
             android:background="@color/button1"
             android:text="路径规划" />
 
         <Button
+            android:id="@+id/btnNav"
+            android:layout_width="45dp"
+            android:layout_height="35dp"
+            android:background="@color/button1"
+            android:text="导航" />
+
+        <Button
             android:id="@+id/btnClose"
-            android:layout_width="50dp"
+            android:layout_width="45dp"
             android:layout_height="35dp"
             android:background="@color/button1"
             android:text="关闭"/>

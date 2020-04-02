@@ -1,10 +1,5 @@
 package com.heasy.map.service;
 
-import android.util.Log;
-
-import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.overlayutil.BikingRouteOverlay;
 import com.baidu.mapapi.overlayutil.DrivingRouteOverlay;
@@ -38,10 +33,10 @@ import java.util.List;
 public class MapRoutePlanService implements OnGetRoutePlanResultListener {
     private RoutePlanSearch mSearch = null;
     private OverlayManager overlayManager;
-    private BaiduMap mBaiduMap;
 
-    public MapRoutePlanService(BaiduMap mBaiduMap){
-        this.mBaiduMap = mBaiduMap;
+    private ServiceEngine serviceEngine;
+    public MapRoutePlanService(ServiceEngine serviceEngine){
+        this.serviceEngine = serviceEngine;
     }
 
     public void init(){
@@ -73,7 +68,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
         if (bikingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
             List<BikingRouteLine> listList = bikingRouteResult.getRouteLines();
             if(listList != null && listList.size() > 0){
-                BikingRouteOverlay overlay = new BikingRouteOverlay(mBaiduMap);
+                BikingRouteOverlay overlay = new BikingRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
                 if(overlayManager != null){
@@ -83,7 +78,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                overlay.zoomToSpan();
+                //overlay.zoomToSpan();
 
                 //更新地图中心点
                 //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
@@ -120,7 +115,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
         if (drivingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
             List<DrivingRouteLine> listList = drivingRouteResult.getRouteLines();
             if(listList != null && listList.size() > 0){
-                DrivingRouteOverlay overlay = new DrivingRouteOverlay(mBaiduMap);
+                DrivingRouteOverlay overlay = new DrivingRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
                 if(overlayManager != null){
@@ -130,7 +125,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                overlay.zoomToSpan();
+                //overlay.zoomToSpan();
 
                 //更新地图中心点
                 //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
@@ -182,7 +177,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
         if (transitRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
             List<TransitRouteLine> listList = transitRouteResult.getRouteLines();
             if(listList != null && listList.size() > 0){
-                TransitRouteOverlay overlay = new TransitRouteOverlay(mBaiduMap);
+                TransitRouteOverlay overlay = new TransitRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
                 removeOverlay();
@@ -190,7 +185,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                overlay.zoomToSpan();
+                //overlay.zoomToSpan();
 
                 //更新地图中心点
                 //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
@@ -223,8 +218,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
         if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
             List<WalkingRouteLine> listList = walkingRouteResult.getRouteLines();
             if(listList != null && listList.size() > 0){
-                WalkingRouteOverlay overlay = new WalkingRouteOverlay(mBaiduMap);
-                //mBaiduMap.setOnMarkerClickListener(overlay);
+                WalkingRouteOverlay overlay = new WalkingRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
                 removeOverlay();
@@ -232,7 +226,7 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                overlay.zoomToSpan();
+                //overlay.zoomToSpan();
             }
         }
     }

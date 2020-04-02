@@ -13,13 +13,12 @@ import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
 import com.heasy.map.GeoCodeResultCallback;
 import com.heasy.map.ReverseGeoCodeResultCallback;
 
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
-
 /**
  * 百度地图地理编码服务
  */
 public class MapSearchService implements OnGetGeoCoderResultListener{
+    private static final String TAG = MapSearchService.class.getSimpleName();
+
     private GeoCoder geoCoder = null;
     private ReverseGeoCodeResultCallback reverseGeoCodeResultCallback;
     private ReverseGeoCodeResultCallback reverseGeoCodeResultCallback2;
@@ -27,8 +26,9 @@ public class MapSearchService implements OnGetGeoCoderResultListener{
     private GeoCodeResultCallback geoCodeResultCallback;
     private GeoCodeResultCallback geoCodeResultCallback2;
 
-    public MapSearchService(){
-
+    private ServiceEngine serviceEngine;
+    public MapSearchService(ServiceEngine serviceEngine){
+        this.serviceEngine = serviceEngine;
     }
 
     public void init(){
@@ -55,10 +55,10 @@ public class MapSearchService implements OnGetGeoCoderResultListener{
     @Override
     public void onGetReverseGeoCodeResult(ReverseGeoCodeResult result) {
         if (result != null && result.error == SearchResult.ERRORNO.NO_ERROR) {
-            Log.i("MapSearchService", "1. " + result.getAddress());
-            Log.i("MapSearchService", "3. " + result.getSematicDescription());
-            Log.i("MapSearchService", "4. " + result.getAdcode());
-            Log.i("MapSearchService", "6. " + result.getCityCode());
+            Log.i(TAG, "1. " + result.getAddress());
+            Log.i(TAG, "3. " + result.getSematicDescription());
+            //Log.i(TAG, "4. " + result.getAdcode());
+            //Log.i(TAG, "6. " + result.getCityCode());
 
             //地址信息
             String address = result.getAddress();

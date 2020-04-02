@@ -36,12 +36,14 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="VYYW5khvAehKFMzc01e35B98b2G8HD7D" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -49,8 +51,9 @@
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"></service>
+            android:process=":remote" />
 
+        <activity android:name=".CompassActivity"></activity>
     </application>
 
 </manifest>

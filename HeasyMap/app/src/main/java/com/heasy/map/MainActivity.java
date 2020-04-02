@@ -1,6 +1,7 @@
 package com.heasy.map;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -11,18 +12,15 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.model.LatLng;
 import com.heasy.map.service.ConfigBean;
 import com.heasy.map.service.ConfigService;
-import com.heasy.map.service.MapLocationService;
-import com.heasy.map.service.MapMarkerService;
-import com.heasy.map.service.MapRoutePlanService;
-import com.heasy.map.service.MapSearchService;
+import com.heasy.map.service.ServiceEngine;
 
 import java.util.Collection;
 
@@ -31,6 +29,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private LinearLayout toolbarContainer;
     private Button btnAddCurrentOverlay;
     private Button btnClearRoute;
+    private Button btnCompass;
     private Button btnRefresh;
 
     // 传感器相关
@@ -41,24 +40,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     MapView mMapView;
     BaiduMap mBaiduMap;
 
-    private MapLocationService mapLocationService;
-    private MapMarkerService mapMarkerService;
-    private MapSearchService mapSearchService;
-    private MapRoutePlanService mapRoutePlanService;
-
-    private ReverseGeoCodeResultCallback callback1 = new ReverseGeoCodeResultCallback(){
-        @Override
-        public void execute(String address, LatLng latLng) {
-            Toast.makeText(MainActivity.this, address, Toast.LENGTH_LONG).show();
-        }
-    };
-    private GeoCodeResultCallback callback2 = new GeoCodeResultCallback(){
-        @Override
-        public void execute(LatLng latLng) {
-            String message = "纬度：" + latLng.latitude + "，经度：" + latLng.longitude;
-            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-        }
-    };
+    private ServiceEngine serviceEngine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +57,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         initViewComponents();
         initBaiduMap();
-        initService();
+        initServiceEngine();
         initOveralys();
     }
 
@@ -84,6 +66,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         toolbarContainer = (LinearLayout)findViewById(R.id.toolbarContainer);
         btnAddCurrentOverlay = (Button)findViewById(R.id.btnAddCurrentOverlay);
         btnClearRoute = (Button)findViewById(R.id.btnClearRoute);
+        btnCompass = (Button)findViewById(R.id.btnCompass);
         btnRefresh = (Button)findViewById(R.id.btnRefresh);
 
         btnToolbar.setOnClickListener(new View.OnClickListener() {
@@ -97,22 +80,40 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
         });
 
+        //当前位置打标签
         btnAddCurrentOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toolbarContainer.setVisibility(View.GONE);
-                mapMarkerService.addOverlay(new ConfigBean(mapLocationService.getLatitude(), mapLocationService.getLongitude()));
+                ConfigBean configBean = new ConfigBean(serviceEngine.getLocationService().getLatitude(), serviceEngine.getLocationService().getLongitude());
+                serviceEngine.getMarkerService().addOverlay(configBean);
             }
         });
 
+        //清除路径
         btnClearRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toolbarContainer.setVisibility(View.GONE);
-                mapRoutePlanService.removeOverlay();
+                mBaiduMap.hideInfoWindow();
+
+                serviceEngine.getRoutePlanService().removeOverlay();
+
+                //停止导航
+                serviceEngine.getLocationService().setRealtimeLocation(false);
             }
         });
 
+        //罗盘仪
+        btnCompass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CompassActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //刷新
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,6 +128,24 @@ public class MainActivity extends Activity implements SensorEventListener {
         mMapView = (MapView) findViewById(R.id.mapView);
         mBaiduMap = mMapView.getMap();
 
+        //定位模式为普通LocationMode.NORMAL、默认图标
+        MyLocationConfiguration myLocationConfiguration = new MyLocationConfiguration(
+                MyLocationConfiguration.LocationMode.NORMAL, true, null);
+        mBaiduMap.setMyLocationConfiguration(myLocationConfiguration);
+
+        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                toolbarContainer.setVisibility(View.GONE);
+            }
+
+            @Override
+            public boolean onMapPoiClick(MapPoi mapPoi) {
+                return false;
+            }
+        });
+
+        //单击地图
         mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -143,30 +162,13 @@ public class MainActivity extends Activity implements SensorEventListener {
         mBaiduMap.setOnMapLongClickListener(new BaiduMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                mapMarkerService.addOverlay(new ConfigBean(latLng.latitude, latLng.longitude));
+                serviceEngine.getMarkerService().addOverlay(new ConfigBean(latLng.latitude, latLng.longitude));
             }
         });
     }
 
-    private void initService() {
-        //定位
-        mapLocationService = new MapLocationService(mBaiduMap);
-        mapLocationService.start(this, true);
-
-        //地理编码
-        mapSearchService = new MapSearchService();
-        mapSearchService.init();
-        mapSearchService.setReverseGeoCodeResultCallback(callback1);
-        mapSearchService.setGeoCodeResultCallback(callback2);
-
-        //路径规划
-        mapRoutePlanService = new MapRoutePlanService(mBaiduMap);
-        mapRoutePlanService.init();
-
-        //覆盖物
-        mapMarkerService = new MapMarkerService(mBaiduMap, MainActivity.this,
-                mapLocationService, mapSearchService, mapRoutePlanService);
-        mapMarkerService.init();
+    private void initServiceEngine() {
+        serviceEngine = ServiceEngine.getInstance(mBaiduMap, MainActivity.this);
     }
 
     public void initOveralys(){
@@ -178,7 +180,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         Collection<ConfigBean> configBeanList = ConfigService.getConfigMap().values();
         if(configBeanList != null){
             for(ConfigBean bean : configBeanList){
-                mapMarkerService.addOverlay(bean);
+                serviceEngine.getMarkerService().addOverlay(bean);
             }
         }
     }
@@ -191,8 +193,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         double x = sensorEvent.values[SensorManager.DATA_X];
         if (Math.abs(x - lastX) > 1.0) {
             int mCurrentDirection = (int) x;
-            mapLocationService.setDirection(mCurrentDirection);
-            mBaiduMap.setMyLocationData(mapLocationService.getLocationData());
+            serviceEngine.getLocationService().setDirection(mCurrentDirection);
+            mBaiduMap.setMyLocationData(serviceEngine.getLocationService().getLocationData());
         }
         lastX = x;
     }
@@ -227,16 +229,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     @Override
     protected void onDestroy() {
-        mapLocationService.stop();
+        serviceEngine.destroy();
 
         // 关闭定位图层
         mBaiduMap.setMyLocationEnabled(false);
         mMapView.onDestroy();
         mMapView = null;
-
-        mapMarkerService.destroy();
-        mapSearchService.destroy();
-        mapRoutePlanService.destroy();
 
         super.onDestroy();
     }
