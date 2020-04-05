@@ -80,6 +80,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clear();
+                hide();
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
             }
@@ -118,11 +120,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnClearRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clear();
                 hide();
-                serviceEngine.getRoutePlanService().removeOverlay();
-
-                //停止导航
-                serviceEngine.getLocationService().setRealtimeLocation(false);
             }
         });
 
@@ -130,6 +129,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnCompass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clear();
                 hide();
                 Intent intent = new Intent(getApplicationContext(), CompassActivity.class);
                 startActivity(intent);
@@ -140,6 +140,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnTrace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clear();
                 hide();
                 Intent intent = new Intent(getApplicationContext(), RouteTraceActivity.class);
                 startActivity(intent);
@@ -209,8 +210,16 @@ public class MainActivity extends Activity implements SensorEventListener {
         serviceEngine = ServiceEngine.getInstance(mBaiduMap, MainActivity.this);
     }
 
-    public void initOveralys(){
+    private void clear(){
+        serviceEngine.getRoutePlanService().removeOverlay();
         mBaiduMap.clear();
+
+        //停止导航
+        serviceEngine.getLocationService().setRealtimeLocation(false);
+    }
+
+    public void initOveralys(){
+        clear();
 
         ConfigService.copyConfigFile();
         ConfigService.loadConfig();
@@ -275,5 +284,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         mMapView = null;
 
         super.onDestroy();
+        finish();
     }
 }
