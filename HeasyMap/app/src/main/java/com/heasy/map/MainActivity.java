@@ -34,6 +34,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private Button btnAddCurrentOverlay;
     private Button btnClearRoute;
     private Button btnCompass;
+    private Button btnTrace;
     private Button btnRefresh;
 
     // 传感器相关
@@ -72,6 +73,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnAddCurrentOverlay = (Button)findViewById(R.id.btnAddCurrentOverlay);
         btnClearRoute = (Button)findViewById(R.id.btnClearRoute);
         btnCompass = (Button)findViewById(R.id.btnCompass);
+        btnTrace = (Button)findViewById(R.id.btnTrace);
         btnRefresh = (Button)findViewById(R.id.btnRefresh);
 
         //设置
@@ -99,7 +101,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnAddCurrentOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toolbarContainer.setVisibility(View.GONE);
+                hide();
                 ConfigBean configBean = new ConfigBean(serviceEngine.getLocationService().getLatitude(), serviceEngine.getLocationService().getLongitude());
                 serviceEngine.getMarkerService().addOverlay(configBean);
 
@@ -116,9 +118,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnClearRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toolbarContainer.setVisibility(View.GONE);
-                mBaiduMap.hideInfoWindow();
-
+                hide();
                 serviceEngine.getRoutePlanService().removeOverlay();
 
                 //停止导航
@@ -130,7 +130,18 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnCompass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                hide();
                 Intent intent = new Intent(getApplicationContext(), CompassActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //路径轨迹
+        btnTrace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hide();
+                Intent intent = new Intent(getApplicationContext(), RouteTraceActivity.class);
                 startActivity(intent);
             }
         });
@@ -139,10 +150,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toolbarContainer.setVisibility(View.GONE);
+                hide();
                 initOveralys();
             }
         });
+    }
+
+    private void hide(){
+        toolbarContainer.setVisibility(View.GONE);
+        mBaiduMap.hideInfoWindow();
     }
 
     private void initBaiduMap() {

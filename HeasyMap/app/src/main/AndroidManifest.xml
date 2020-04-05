@@ -53,8 +53,9 @@
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".CompassActivity"></activity>
-        <activity android:name=".SettingsActivity"></activity>
+        <activity android:name=".CompassActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".RouteTraceActivity"></activity>
     </application>
 
 </manifest>

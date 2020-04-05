@@ -21,11 +21,15 @@ public class MapLocationService extends AbstractMapLocationService{
 
     @Override
     public void handleRealtimeLocation(BDLocation location) {
+        if(serviceEngine.getMarkerService().getCurrentMarker() == null){
+            return;
+        }
+
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         LatLng destPosition = serviceEngine.getMarkerService().getCurrentMarker().getPosition();
 
         String routePlanMode = PreferenceUtil.getStringValue(serviceEngine.getContext(), "routePlanMode");
-        //Log.i(TAG, "routePlanMode=" + routePlanMode);
+        Log.d(TAG, "routePlanMode=" + routePlanMode);
 
         switch (routePlanMode){
             case "步行":

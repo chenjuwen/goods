@@ -24,6 +24,10 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Pr
         routePlanMode.setOnPreferenceChangeListener(this);
         routePlanMode.setSummary(PreferenceUtil.getStringValue(getActivity(), "routePlanMode"));
 
+        Preference traceInterval = getPreferenceManager().findPreference("traceInterval");
+        traceInterval.setOnPreferenceChangeListener(this);
+        traceInterval.setSummary(PreferenceUtil.getStringValue(getActivity(), "traceInterval"));
+
         Preference pCheckBox = getPreferenceManager().findPreference("pCheckBox");
         pCheckBox.setOnPreferenceChangeListener(this);
         pCheckBox.setSummary(Boolean.toString(PreferenceUtil.getBooleanValue(getActivity(), "pCheckBox", false)));
@@ -31,10 +35,6 @@ public class SettingsPreferenceFragment extends PreferenceFragment implements Pr
         Preference pSwitch = getPreferenceManager().findPreference("pSwitch");
         pSwitch.setOnPreferenceChangeListener(this);
         pSwitch.setSummary(Boolean.toString(PreferenceUtil.getBooleanValue(getActivity(), "pSwitch", false)));
-
-        Preference pEditText = getPreferenceManager().findPreference("pEditText");
-        pEditText.setOnPreferenceChangeListener(this);
-        pEditText.setSummary(PreferenceUtil.getStringValue(getActivity(), "pEditText"));
 
         Preference pMultiSelectList = getPreferenceManager().findPreference("pMultiSelectList");
         pMultiSelectList.setOnPreferenceChangeListener(this);

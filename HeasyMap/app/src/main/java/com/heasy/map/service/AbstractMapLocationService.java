@@ -1,6 +1,7 @@
 package com.heasy.map.service;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
@@ -109,19 +110,18 @@ public abstract class AbstractMapLocationService extends BDAbstractLocationListe
 
         baiduMap.setMyLocationData(getLocationData());
 
+        //Log.i(TAG, "zoom=" + baiduMap.getMapStatus().zoom);
+
         //首次定位
         if (isFirstLocation) {
+            isFirstLocation = false;
             MapStatus.Builder builder = new MapStatus.Builder();
             builder.target(new LatLng(latitude, longitude)).zoom(DEFAULT_ZOOM); //初始缩放
             baiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build())); //定位到指定位置
         }
 
-        if(realtimeLocation){ //实时更新路径规划
+        if(realtimeLocation){ //实时处理定位
             handleRealtimeLocation(location);
-        }else{
-            if (isFirstLocation) {
-                isFirstLocation = false;
-            }
         }
     }
 

@@ -72,6 +72,15 @@
                 android:text="罗盘仪" />
 
             <Button
+                android:id="@+id/btnTrace"
+                android:layout_width="55dp"
+                android:layout_height="50dp"
+                android:background="#90EE90"
+                android:layout_marginLeft="1dp"
+                android:textSize="13dp"
+                android:text="路径轨迹" />
+
+            <Button
                 android:id="@+id/btnRefresh"
                 android:layout_width="40dp"
                 android:layout_height="50dp"

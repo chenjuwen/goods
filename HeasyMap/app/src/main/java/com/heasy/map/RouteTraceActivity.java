@@ -6,33 +6,31 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.Marker;
-import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
-import com.heasy.map.service.CompassLocationService;
-import com.heasy.map.service.ServiceEngine;
+import com.heasy.map.service.RouteTraceService;
 
-public class CompassActivity extends AppCompatActivity implements SensorEventListener {
-    private CompassLocationService compassLocationService;
+public class RouteTraceActivity extends AppCompatActivity implements SensorEventListener {
+    private RouteTraceService routeTraceService;
 
     // Map相关
     MapView mMapView;
     BaiduMap mBaiduMap;
-    private BitmapDescriptor icon3;
 
     // 传感器相关
     private SensorManager mSensorManager;
     private Double lastX = 0.0;
 
-    private TextView txtMessage;
+    private Button btnRestart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,17 +40,20 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.activity_compass);
+        setContentView(R.layout.activity_route_trace);
 
         // 获取传感器管理服务
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        icon3 = BitmapDescriptorFactory.fromResource(R.drawable.icon3);
-
-        txtMessage = (TextView)findViewById(R.id.txtMessage);
+        btnRestart = (Button)findViewById(R.id.btnRestart);
+        btnRestart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                routeTraceService.clear();
+            }
+        });
 
         initBaiduMap();
-        initOveraly();
         initLocationService();
     }
 
@@ -61,25 +62,15 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         mMapView = (MapView) findViewById(R.id.mapView);
         mBaiduMap = mMapView.getMap();
 
-        //定位模式为罗盘仪、默认图标
+        //定位模式为普通、默认图标
         MyLocationConfiguration myLocationConfiguration = new MyLocationConfiguration(
-                MyLocationConfiguration.LocationMode.COMPASS, true, null);
+                MyLocationConfiguration.LocationMode.NORMAL, true, null);
         mBaiduMap.setMyLocationConfiguration(myLocationConfiguration);
     }
 
-    public void initOveraly(){
-        mBaiduMap.clear();
-
-        if(ServiceEngine.getInstance().getMarkerService().getCurrentMarker() != null){
-            Marker marker = ServiceEngine.getInstance().getMarkerService().getCurrentMarker();
-            MarkerOptions markerOptions = new MarkerOptions().position(marker.getPosition()).icon(icon3).zIndex(10);
-            mBaiduMap.addOverlay(markerOptions);
-        }
-    }
-
     private void initLocationService(){
-        compassLocationService = new CompassLocationService(mBaiduMap, getApplicationContext(), txtMessage);
-        compassLocationService.init();
+        routeTraceService = new RouteTraceService(mBaiduMap, getApplicationContext());
+        routeTraceService.init();
     }
 
     /**
@@ -87,14 +78,17 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        double x = sensorEvent.values[SensorManager.DATA_X];
-        if (Math.abs(x - lastX) > 1.0) {
-            int mCurrentDirection = (int) x;
-            compassLocationService.setDirection(mCurrentDirection);
-            mBaiduMap.setMyLocationData(compassLocationService.getLocationData());
+        if(routeTraceService != null) {
+            double x = sensorEvent.values[SensorManager.DATA_X];
+            if (Math.abs(x - lastX) > 1.0) {
+                int mCurrentDirection = (int) x;
+                routeTraceService.setDirection(mCurrentDirection);
+                mBaiduMap.setMyLocationData(routeTraceService.getLocationData());
+            }
+            lastX = x;
         }
-        lastX = x;
     }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -126,12 +120,8 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
     @Override
     protected void onDestroy() {
-        if(icon3 != null){
-            icon3.recycle();
-        }
-
-        if(compassLocationService != null) {
-            compassLocationService.destroy();
+        if(routeTraceService != null) {
+            routeTraceService.destroy();
         }
 
         // 关闭定位图层
@@ -141,4 +131,5 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
         super.onDestroy();
     }
+
 }

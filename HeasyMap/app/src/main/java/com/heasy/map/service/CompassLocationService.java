@@ -18,6 +18,7 @@ public class CompassLocationService extends AbstractMapLocationService{
     public CompassLocationService(BaiduMap baiduMap, Context context, TextView txtMessage){
         super(baiduMap, context);
         this.txtMessage = txtMessage;
+        this.realtimeLocation = true;
     }
 
     @Override
