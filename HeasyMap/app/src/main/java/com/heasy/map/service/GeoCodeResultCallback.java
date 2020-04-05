@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.service;
 
 import com.baidu.mapapi.model.LatLng;
 

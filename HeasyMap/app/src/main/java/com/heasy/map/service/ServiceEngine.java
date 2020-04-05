@@ -5,8 +5,6 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.model.LatLng;
-import com.heasy.map.GeoCodeResultCallback;
-import com.heasy.map.ReverseGeoCodeResultCallback;
 
 /**
  * Created by Administrator on 2020/4/2.

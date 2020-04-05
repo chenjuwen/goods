@@ -10,14 +10,12 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
-import com.heasy.map.GeoCodeResultCallback;
-import com.heasy.map.ReverseGeoCodeResultCallback;
 
 /**
  * 百度地图地理编码服务
  */
 public class MapSearchService implements OnGetGeoCoderResultListener{
-    private static final String TAG = MapSearchService.class.getSimpleName();
+    private static final String TAG = MapSearchService.class.getName();
 
     private GeoCoder geoCoder = null;
     private ReverseGeoCodeResultCallback reverseGeoCodeResultCallback;

@@ -54,6 +54,7 @@
             android:process=":remote" />
 
         <activity android:name=".CompassActivity"></activity>
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>

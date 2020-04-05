@@ -8,22 +8,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.heasy.map.service.CompassLocationService;
-import com.heasy.map.service.ConfigBean;
-import com.heasy.map.service.ConfigService;
 import com.heasy.map.service.ServiceEngine;
-
-import java.util.Collection;
 
 public class CompassActivity extends AppCompatActivity implements SensorEventListener {
     private CompassLocationService compassLocationService;
@@ -36,6 +31,8 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     // 传感器相关
     private SensorManager mSensorManager;
     private Double lastX = 0.0;
+
+    private TextView txtMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +49,8 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
         icon3 = BitmapDescriptorFactory.fromResource(R.drawable.icon3);
 
+        txtMessage = (TextView)findViewById(R.id.txtMessage);
+
         initBaiduMap();
         initOveraly();
         initLocationService();
@@ -66,10 +65,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         MyLocationConfiguration myLocationConfiguration = new MyLocationConfiguration(
                 MyLocationConfiguration.LocationMode.COMPASS, true, null);
         mBaiduMap.setMyLocationConfiguration(myLocationConfiguration);
-
-        MapStatus.Builder builder = new MapStatus.Builder();
-        builder.overlook(0); //俯仰角度
-        mBaiduMap.animateMapStatus(MapStatusUpdateFactory.newMapStatus(builder.build()));
     }
 
     public void initOveraly(){
@@ -83,7 +78,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private void initLocationService(){
-        compassLocationService = new CompassLocationService(mBaiduMap, getApplicationContext());
+        compassLocationService = new CompassLocationService(mBaiduMap, getApplicationContext(), txtMessage);
         compassLocationService.init();
         compassLocationService.setRealtimeLocation(true);
     }

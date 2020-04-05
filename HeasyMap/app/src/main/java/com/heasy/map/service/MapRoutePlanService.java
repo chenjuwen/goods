@@ -45,6 +45,47 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
     }
 
     /**
+     * 步行
+     * @param from
+     * @param to
+     */
+    public void walkingSearch(LatLng from, LatLng to){
+        PlanNode fromNode = PlanNode.withLocation(from);
+        PlanNode toNode = PlanNode.withLocation(to);
+        mSearch.walkingSearch((new WalkingRoutePlanOption()).from(fromNode).to(toNode));
+    }
+
+    /**
+     * 步行
+     * @param walkingRouteResult
+     */
+    @Override
+    public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
+        if(walkingRouteResult == null || walkingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR){
+            return;
+        }
+
+        if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+            List<WalkingRouteLine> listList = walkingRouteResult.getRouteLines();
+            if(listList != null && listList.size() > 0){
+                WalkingRouteOverlay overlay = new WalkingRouteOverlay(serviceEngine.getBaiduMap());
+
+                //删除旧的路径
+                removeOverlay();
+                overlayManager = overlay;
+
+                overlay.setData(listList.get(0));
+                overlay.addToMap();
+                //overlay.zoomToSpan();
+
+                //更新地图中心点
+                //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
+                //mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mapStatus));
+            }
+        }
+    }
+
+    /**
      * 骑行
      * @param from
      * @param to
@@ -71,18 +112,11 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
                 BikingRouteOverlay overlay = new BikingRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
-                if(overlayManager != null){
-                    overlayManager.removeFromMap();
-                }
+                removeOverlay();
                 overlayManager = overlay;
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                //overlay.zoomToSpan();
-
-                //更新地图中心点
-                //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
-                //mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mapStatus));
             }
         }
     }
@@ -118,38 +152,13 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
                 DrivingRouteOverlay overlay = new DrivingRouteOverlay(serviceEngine.getBaiduMap());
 
                 //删除旧的路径
-                if(overlayManager != null){
-                    overlayManager.removeFromMap();
-                }
+                removeOverlay();
                 overlayManager = overlay;
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                //overlay.zoomToSpan();
-
-                //更新地图中心点
-                //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
-                //mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mapStatus));
             }
         }
-    }
-
-    /**
-     * 室内
-     * @param indoorRouteResult
-     */
-    @Override
-    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
-
-    }
-
-    /**
-     * 跨城公交
-     * @param massTransitRouteResult
-     */
-    @Override
-    public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
-
     }
 
     /**
@@ -185,50 +194,26 @@ public class MapRoutePlanService implements OnGetRoutePlanResultListener {
 
                 overlay.setData(listList.get(0));
                 overlay.addToMap();
-                //overlay.zoomToSpan();
-
-                //更新地图中心点
-                //MapStatus mapStatus = new MapStatus.Builder().target(listList.get(0).getTerminal().getLocation()).zoom(MapLocationService.DEFAULT_ZOOM).build();
-                //mBaiduMap.setMapStatus(MapStatusUpdateFactory.newMapStatus(mapStatus));
             }
         }
     }
 
     /**
-     * 步行
-     * @param from
-     * @param to
-     */
-    public void walkingSearch(LatLng from, LatLng to){
-        PlanNode fromNode = PlanNode.withLocation(from);
-        PlanNode toNode = PlanNode.withLocation(to);
-        mSearch.walkingSearch((new WalkingRoutePlanOption()).from(fromNode).to(toNode));
-    }
-
-    /**
-     * 步行
-     * @param walkingRouteResult
+     * 室内
+     * @param indoorRouteResult
      */
     @Override
-    public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
-        if(walkingRouteResult == null || walkingRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR){
-            return;
-        }
+    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
 
-        if (walkingRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
-            List<WalkingRouteLine> listList = walkingRouteResult.getRouteLines();
-            if(listList != null && listList.size() > 0){
-                WalkingRouteOverlay overlay = new WalkingRouteOverlay(serviceEngine.getBaiduMap());
+    }
 
-                //删除旧的路径
-                removeOverlay();
-                overlayManager = overlay;
+    /**
+     * 跨城公交
+     * @param massTransitRouteResult
+     */
+    @Override
+    public void onGetMassTransitRouteResult(MassTransitRouteResult massTransitRouteResult) {
 
-                overlay.setData(listList.get(0));
-                overlay.addToMap();
-                //overlay.zoomToSpan();
-            }
-        }
     }
 
     public void destroy(){

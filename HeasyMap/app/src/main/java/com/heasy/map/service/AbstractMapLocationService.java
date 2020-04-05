@@ -16,7 +16,7 @@ import com.baidu.mapapi.model.LatLng;
  * 百度地图定位服务
  */
 public abstract class AbstractMapLocationService extends BDAbstractLocationListener{
-    public static final String TAG = AbstractMapLocationService.class.getSimpleName();
+    public static final String TAG = AbstractMapLocationService.class.getName();
     public static float DEFAULT_ZOOM =  16.0f;
 
     LocationClient mLocationClient;
@@ -58,6 +58,7 @@ public abstract class AbstractMapLocationService extends BDAbstractLocationListe
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy); //定位模式：高精度
         option.setIsNeedAddress(true);
         option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，结果类似于“在北京天安门附近”
+        option.setNeedDeviceDirect(true);
         option.setIgnoreKillProcess(false); //stop的时候杀死这个进程
         return option;
     }

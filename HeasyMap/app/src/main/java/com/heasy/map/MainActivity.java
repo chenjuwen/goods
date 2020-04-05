@@ -15,16 +15,20 @@ import android.widget.LinearLayout;
 
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapPoi;
+import com.baidu.mapapi.map.MapStatus;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.model.LatLng;
 import com.heasy.map.service.ConfigBean;
 import com.heasy.map.service.ConfigService;
+import com.heasy.map.service.MapLocationService;
 import com.heasy.map.service.ServiceEngine;
 
 import java.util.Collection;
 
 public class MainActivity extends Activity implements SensorEventListener {
+    private Button btnSettings;
     private Button btnToolbar;
     private LinearLayout toolbarContainer;
     private Button btnAddCurrentOverlay;
@@ -62,6 +66,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void initViewComponents() {
+        btnSettings = (Button)findViewById(R.id.btnSettings);
         btnToolbar = (Button) findViewById(R.id.btnToolbar);
         toolbarContainer = (LinearLayout)findViewById(R.id.toolbarContainer);
         btnAddCurrentOverlay = (Button)findViewById(R.id.btnAddCurrentOverlay);
@@ -69,6 +74,16 @@ public class MainActivity extends Activity implements SensorEventListener {
         btnCompass = (Button)findViewById(R.id.btnCompass);
         btnRefresh = (Button)findViewById(R.id.btnRefresh);
 
+        //设置
+        btnSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //工具
         btnToolbar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,6 +102,13 @@ public class MainActivity extends Activity implements SensorEventListener {
                 toolbarContainer.setVisibility(View.GONE);
                 ConfigBean configBean = new ConfigBean(serviceEngine.getLocationService().getLatitude(), serviceEngine.getLocationService().getLongitude());
                 serviceEngine.getMarkerService().addOverlay(configBean);
+
+                //更新地图中心点
+                MapStatus mapStatus = new MapStatus.Builder()
+                        .target(serviceEngine.getLocationService().getPosition())
+                        .zoom(MapLocationService.DEFAULT_ZOOM)
+                        .build();
+                serviceEngine.getBaiduMap().animateMapStatus(MapStatusUpdateFactory.newMapStatus(mapStatus));
             }
         });
 

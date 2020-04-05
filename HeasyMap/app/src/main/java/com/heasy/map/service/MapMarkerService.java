@@ -1,6 +1,7 @@
 package com.heasy.map.service;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -18,8 +19,8 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.heasy.map.R;
-import com.heasy.map.ReverseGeoCodeResultCallback;
-import com.heasy.map.StringUtil;
+import com.heasy.map.utils.PreferenceUtil;
+import com.heasy.map.utils.StringUtil;
 
 import java.math.BigDecimal;
 
@@ -27,6 +28,7 @@ import java.math.BigDecimal;
  * 百度地图覆盖物服务
  */
 public class MapMarkerService implements BaiduMap.OnMarkerClickListener{
+    private static final String TAG = MapMarkerService.class.getName();
     private EditText txtDistance;
     private Marker marker;
 
@@ -156,7 +158,30 @@ public class MapMarkerService implements BaiduMap.OnMarkerClickListener{
             @Override
             public void onClick(View v) {
                 serviceEngine.getLocationService().setRealtimeLocation(false);
-                serviceEngine.getRoutePlanService().walkingSearch(serviceEngine.getLocationService().getPosition(), marker.getPosition());
+
+                LatLng currentPosition = serviceEngine.getLocationService().getPosition();
+                LatLng destPosition = marker.getPosition();
+
+                String routePlanMode = PreferenceUtil.getStringValue(serviceEngine.getContext(), "routePlanMode");
+                Log.i(TAG, "routePlanMode=" + routePlanMode);
+
+                switch (routePlanMode){
+                    case "步行":
+                        serviceEngine.getRoutePlanService().walkingSearch(currentPosition, destPosition);
+                        break;
+                    case "骑行":
+                        serviceEngine.getRoutePlanService().bikingSearch(currentPosition, destPosition);
+                        break;
+                    case "驾车":
+                        serviceEngine.getRoutePlanService().drivingSearch(currentPosition, destPosition);
+                        break;
+                    case "公交":
+                        serviceEngine.getRoutePlanService().transitSearch(serviceEngine.getLocationService().city, currentPosition, destPosition);
+                        break;
+                    default:
+                        serviceEngine.getRoutePlanService().walkingSearch(currentPosition, destPosition);
+                }
+
                 serviceEngine.getBaiduMap().hideInfoWindow();
             }
         });

@@ -2,6 +2,7 @@ package com.heasy.map.service;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
@@ -12,8 +13,11 @@ import com.baidu.mapapi.utils.DistanceUtil;
  * 百度地图定位服务
  */
 public class CompassLocationService extends AbstractMapLocationService{
-    public CompassLocationService(BaiduMap baiduMap, Context context){
+    private TextView txtMessage;
+
+    public CompassLocationService(BaiduMap baiduMap, Context context, TextView txtMessage){
         super(baiduMap, context);
+        this.txtMessage = txtMessage;
     }
 
     @Override
@@ -24,7 +28,7 @@ public class CompassLocationService extends AbstractMapLocationService{
 
             //计算最新的距离
             long distance = new Double(DistanceUtil.getDistance(currentPosition, destPosition)).longValue();
-            Log.i("CompassLocationService", String.valueOf(distance) + " 米");
+            txtMessage.setText("距离目标 " + distance + " 米");
         }
     }
 

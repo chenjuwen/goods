@@ -20,12 +20,22 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btnToolbar"
-            android:layout_width="50dp"
+            android:id="@+id/btnSettings"
+            android:layout_width="40dp"
             android:layout_height="50dp"
             android:layout_gravity="left"
             android:background="#32CD32"
             android:textSize="14dp"
+            android:text="设置" />
+
+        <Button
+            android:id="@+id/btnToolbar"
+            android:layout_width="40dp"
+            android:layout_height="50dp"
+            android:layout_gravity="left"
+            android:background="#32CD32"
+            android:textSize="14dp"
+            android:layout_marginLeft="1dp"
             android:text="工具" />
 
         <LinearLayout
@@ -36,7 +46,7 @@
             android:orientation="horizontal">
             <Button
                 android:id="@+id/btnAddCurrentOverlay"
-                android:layout_width="60dp"
+                android:layout_width="55dp"
                 android:layout_height="50dp"
                 android:background="#90EE90"
                 android:layout_marginLeft="1dp"
@@ -45,7 +55,7 @@
 
             <Button
                 android:id="@+id/btnClearRoute"
-                android:layout_width="60dp"
+                android:layout_width="55dp"
                 android:layout_height="50dp"
                 android:background="#90EE90"
                 android:layout_marginLeft="1dp"
@@ -54,7 +64,7 @@
 
             <Button
                 android:id="@+id/btnCompass"
-                android:layout_width="60dp"
+                android:layout_width="45dp"
                 android:layout_height="50dp"
                 android:background="#90EE90"
                 android:layout_marginLeft="1dp"
@@ -63,7 +73,7 @@
 
             <Button
                 android:id="@+id/btnRefresh"
-                android:layout_width="60dp"
+                android:layout_width="40dp"
                 android:layout_height="50dp"
                 android:background="#90EE90"
                 android:layout_marginLeft="1dp"
