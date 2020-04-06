@@ -38,13 +38,17 @@ public class SalesAction implements Action {
                 String selection = null;
                 if(StringUtil.isNotEmpty(queryContent)){
                     selection = "user_name like '%" + queryContent + "%' or address like '%" + queryContent + "%'";
+                    selection += " or phone like '%" + queryContent + "%'";
                 }
 
                 PageInfo<Map<String, String>> pageInfo = cipherManager
                         .queryForPage("sales_info", columns, selection, null, "create_time desc", 1, 100);
-                String result = FastjsonUtil.object2String(pageInfo.getList());
-                return result;
-
+                if(pageInfo.getList() != null) {
+                    String result = FastjsonUtil.object2String(pageInfo.getList());
+                    return result;
+                }else{
+                    return FastjsonUtil.object2String(JSONArray.parse("[]"));
+                }
             } else if ("saveInfo".equalsIgnoreCase(extend)) {
                 String userName = FastjsonUtil.getString(jsonObject, "userName");
                 String address = FastjsonUtil.getString(jsonObject, "address");

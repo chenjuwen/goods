@@ -63,7 +63,7 @@
 					<tr style="height:40px;">
 						<td align="center">商品名称</td>
 						<td align="center">零售价(元)</td>
-						<td align="center">团队价(元)</td>
+						<td align="center">团体价(元)</td>
 					</tr>
 					<tr @click.stop="_selectRow(item.name, item.price, item.group_price)" v-for="item in productList" style="height:40px;">
 						<td>{{ item.name }}</td>
@@ -88,8 +88,8 @@
 
 				openFullscreen: false,
 				productList: [
-					{name:"杂优谷", price:1.50, group_price:1.60},
-					{name:"七三粘", price:1.30, group_price:1.40}
+					//{name:"杂优谷", price:1.50, group_price:1.60},
+					//{name:"七三粘", price:1.30, group_price:1.40}
 				]
 			},
 			methods: {
@@ -108,7 +108,7 @@
 
 					if(this.sales_type == "1"){ //零售
 						this.price = price;
-					}else{ //团队
+					}else{ //团体
 						this.price = group_price;
 					}
 
@@ -124,7 +124,7 @@
 			vm.salesId = getPageParameter("salesId");
 			vm.sales_type = getPageParameter("sales_type");
 
-			var obj = {};
+			var obj = {"status":"1"};
 			var dataArr = jsBridge.dispatchAction("ProductAction", JSON.stringify(obj), "list");
 			vm.productList = jQuery.parseJSON(dataArr);
 		}

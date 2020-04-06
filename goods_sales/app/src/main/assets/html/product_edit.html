@@ -32,7 +32,7 @@
 
 		<mt-field label="名称" v-model.trim="name"></mt-field>
 		<mt-field label="零售价(元/斤)" v-model.trim="price"></mt-field>
-		<mt-field label="团队价(元/斤)" v-model.trim="group_price"></mt-field>
+		<mt-field label="团体价(元/斤)" v-model.trim="group_price"></mt-field>
 
 		<div style="border-bottom:1px solid #d9d9d9; border-top:1px solid #d9d9d9; padding-top: 5px;">
 			<div style="margin-left:10px;">备注</div>
@@ -92,7 +92,7 @@
 
 			if(vm.group_price == ""){
 				vm.$toast({
-					message: '请输入团队价格！',
+					message: '请输入团体价格！',
 					duration: 1500
 				});
 				return;

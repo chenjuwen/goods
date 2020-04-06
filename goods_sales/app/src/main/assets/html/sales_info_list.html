@@ -17,7 +17,6 @@
 			background-image: none;
 		}
 		.data-container {
-			border-top: 2px solid #d9d9d9;
 			border-bottom: 2px solid #d9d9d9;
 			width: 100%;
 			border-collapse: collapse;
@@ -57,14 +56,16 @@
 			</tr>
 
 			<tr class="header">
-				<td width="25%">姓名</td>
-				<td width="35%">手机号码</td>
-				<td width="40%">时间</td>
+				<td>姓名</td>
+				<td>手机号码</td>
+				<td>时间</td>
+				<td>类型</td>
 			</tr>
 			<tr @click.stop="_cell(item.id)" v-for="item in dataList" class="data">
 				<td class="data-td">{{ item.user_name }}</td>
 				<td class="data-td">{{ item.phone }}</td>
 				<td class="data-td">{{ item.create_time }}</td>
+				<td class="data-td">{{ item.sales_type == 1 ? "零售" : "团体" }}</td>
 			</tr>
 		</table>
 
@@ -76,7 +77,8 @@
 			el: '#app',
 			data: {
 				dataList: [
-				  	{id:1, user_name:"张三", phone: "13799999999", create_time:"2020-02-13 16:05"}
+				  	{id:1, user_name:"张三", phone: "13799999999", create_time:"2020-02-13 16:05", sales_type:1},
+				  	{id:2, user_name:"张学友", phone: "13788888888", create_time:"2020-02-14 16:05", sales_type:2}
 				],
 				queryContent: "",
 

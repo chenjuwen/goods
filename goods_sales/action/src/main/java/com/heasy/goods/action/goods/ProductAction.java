@@ -29,8 +29,14 @@ public class ProductAction implements Action {
         final SQLCipherManager cipherManager = heasyContext.getServiceEngine().getDataService().getSQLCipherManager();
 
         if("list".equalsIgnoreCase(extend)){
+            String status = FastjsonUtil.getString(jsonObject, "status");
+
             StringBuilder sb = new StringBuilder();
             sb.append("select id,name,price,group_price,status from product_info");
+            if(StringUtil.isNotEmpty(status)){
+                sb.append(" where status='" + status + "'");
+            }
+            logger.info(sb.toString());
 
             JSONArray array = new JSONArray();
             List<Map<String, String>> dataList = cipherManager.rawQuery(sb.toString(), null);
