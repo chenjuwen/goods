@@ -3,6 +3,7 @@ package com.heasy.map.service;
 import android.util.Log;
 
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.PoiInfo;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.geocode.GeoCodeOption;
 import com.baidu.mapapi.search.geocode.GeoCodeResult;
@@ -10,6 +11,10 @@ import com.baidu.mapapi.search.geocode.GeoCoder;
 import com.baidu.mapapi.search.geocode.OnGetGeoCoderResultListener;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeOption;
 import com.baidu.mapapi.search.geocode.ReverseGeoCodeResult;
+
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * 百度地图地理编码服务
@@ -57,6 +62,14 @@ public class MapSearchService implements OnGetGeoCoderResultListener{
             Log.i(TAG, "3. " + result.getSematicDescription());
             //Log.i(TAG, "4. " + result.getAdcode());
             //Log.i(TAG, "6. " + result.getCityCode());
+
+            List<PoiInfo> list = result.getPoiList();
+            if(list != null){
+                for(PoiInfo info : list){
+                    //Log.i(TAG, info.toString());
+                    Log.i(TAG, info.name + ", " + info.address + " " + info.direction + " " + info.distance + "米, " + info.location.latitude + ", " + info.location.longitude);
+                }
+            }
 
             //地址信息
             String address = result.getAddress();

@@ -5,6 +5,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -19,8 +21,26 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.heasy.map.service.RouteTraceService;
 
-public class RouteTraceActivity extends AppCompatActivity implements SensorEventListener {
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+public class RouteTraceActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
+    public static final String STATUS_START = "进行中";
+    public static final String STATUS_PAUSE = "暂停";
+
     private RouteTraceService routeTraceService;
+
+    //轨迹任务相关
+    private Date startTime; //开始时间
+    private Date endTime; //结束时间
+    private long distance; //总路程
+    private long usedTime = 0; //用时，单位秒
+    private Long taskId; //任务ID
+    private Long userId; //用户ID
+    private String status = "";
+
+    private Handler handler;
+    private TaskThread taskThread;
 
     // Map相关
     MapView mMapView;
@@ -30,7 +50,15 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
     private SensorManager mSensorManager;
     private Double lastX = 0.0;
 
-    private Button btnRestart;
+    private Button btnStart;
+    private Button btnPause;
+    private Button btnStop;
+    private Button btnContinue;
+    private Button btnHistory;
+    private TextView txtStatus;
+    private TextView txtTimes;
+    private TextView txtDistance;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,16 +73,105 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
         // 获取传感器管理服务
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-        btnRestart = (Button)findViewById(R.id.btnRestart);
-        btnRestart.setOnClickListener(new View.OnClickListener() {
+        handler = new Handler(){
             @Override
-            public void onClick(View v) {
-                routeTraceService.clear();
+            public void handleMessage(Message message) {
+                if(status.equalsIgnoreCase(STATUS_START)) {
+                    int what = message.what;
+                    if (what == 1) {
+                        txtTimes.setText(usedTime + "秒");
+                        txtDistance.setText(distance + "米");
+                    }
+                }
             }
-        });
+        };
 
+        initComponent();
         initBaiduMap();
         initLocationService();
+
+        taskThread = new TaskThread();
+        taskThread.setDaemon(true);
+        taskThread.start();
+    }
+
+    private void initComponent(){
+        btnStart = (Button)findViewById(R.id.btnStart);
+        btnStart.setOnClickListener(this);
+
+        btnPause = (Button)findViewById(R.id.btnPause);
+        btnPause.setOnClickListener(this);
+
+        btnStop = (Button)findViewById(R.id.btnStop);
+        btnStop.setOnClickListener(this);
+
+        btnContinue = (Button)findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(this);
+
+        btnHistory = (Button)findViewById(R.id.btnHistory);
+        btnHistory.setOnClickListener(this);
+
+        txtStatus = (TextView)findViewById(R.id.txtStatus);
+        txtTimes = (TextView)findViewById(R.id.txtTimes);
+        txtDistance = (TextView)findViewById(R.id.txtDistance);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnStart:
+                routeTraceService.startTrace();
+                btnStart.setVisibility(View.GONE);
+                btnPause.setVisibility(View.VISIBLE);
+                btnStop.setVisibility(View.VISIBLE);
+                btnContinue.setVisibility(View.GONE);
+                btnHistory.setVisibility(View.GONE);
+
+                usedTime = 0;
+                distance = 0;
+                status = STATUS_START;
+                startTime = new Date();
+
+                txtStatus.setText(status);
+                break;
+            case R.id.btnPause:
+                routeTraceService.pauseTrace();
+                btnStart.setVisibility(View.GONE);
+                btnPause.setVisibility(View.GONE);
+                btnStop.setVisibility(View.VISIBLE);
+                btnContinue.setVisibility(View.VISIBLE);
+                status = STATUS_PAUSE;
+                txtStatus.setText(status);
+                break;
+            case R.id.btnStop:
+                routeTraceService.stopTrace();
+                btnStart.setVisibility(View.VISIBLE);
+                btnPause.setVisibility(View.GONE);
+                btnStop.setVisibility(View.GONE);
+                btnContinue.setVisibility(View.GONE);
+                btnHistory.setVisibility(View.VISIBLE);
+
+                status = "";
+                endTime = new Date();
+
+                txtStatus.setText(status);
+                break;
+            case R.id.btnContinue:
+                routeTraceService.continueTrace();
+                btnStart.setVisibility(View.GONE);
+                btnPause.setVisibility(View.VISIBLE);
+                btnStop.setVisibility(View.VISIBLE);
+                btnContinue.setVisibility(View.GONE);
+
+                status = STATUS_START;
+
+                txtStatus.setText(status);
+                break;
+            case R.id.btnHistory:
+                break;
+        }
+
+        txtStatus.setText(status);
     }
 
     private void initBaiduMap() {
@@ -130,6 +247,32 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
         mMapView = null;
 
         super.onDestroy();
+    }
+
+    class TaskThread extends Thread{
+        @Override
+        public void run() {
+            usedTime = 0;
+
+            while(true){
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+
+                    //暂停时不算时间
+                    if(status.equalsIgnoreCase(STATUS_START)) {
+                        ++usedTime;
+                        distance = routeTraceService.getTotalDistance();
+
+                        Message message = Message.obtain();
+                        message.what = 1;
+                        handler.sendMessage(message);
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

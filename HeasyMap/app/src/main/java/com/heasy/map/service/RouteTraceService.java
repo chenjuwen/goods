@@ -1,6 +1,7 @@
 package com.heasy.map.service;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.baidu.location.BDLocation;
@@ -14,6 +15,8 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.heasy.map.utils.PreferenceUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +27,7 @@ public class RouteTraceService extends AbstractMapLocationService{
     private static final String TAG = RouteTraceService.class.getName();
 
     private List<LatLng> positionList = new ArrayList<>(); //路径轨迹关键坐标点
+    private long totalDistance = 0; //总路程
     private boolean enableTrace = false; //是否记录路径轨迹
     private Polyline polyline; //折线
 
@@ -57,6 +61,7 @@ public class RouteTraceService extends AbstractMapLocationService{
                 if(distance > Integer.parseInt(traceInterval)){
                     positionList.add(currentPosition);
                     drowTrace();
+                    totalDistance += distance; //累计路程数
                 }
             }
         }
@@ -84,24 +89,67 @@ public class RouteTraceService extends AbstractMapLocationService{
         polyline = (Polyline) baiduMap.addOverlay(overlayOptions);
     }
 
+    private void saveData(){
+        baiduMap.snapshot(new BaiduMap.SnapshotReadyCallback() {
+            @Override
+            public void onSnapshotReady(Bitmap bitmap) {
+                File file = new File("/mnt/sdcard/heasy_map.png");
+                FileOutputStream out;
+                try {
+                    out = new FileOutputStream(file);
+                    if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
+                        out.flush();
+                        out.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public void clear(){
+        totalDistance = 0;
         baiduMap.clear();
         positionList.clear();
     }
 
-    @Override
-    public void init() {
+    /**
+     * 开始记录轨迹
+     */
+    public void startTrace(){
         clear();
-        enableTrace = true;
-
-        super.init();
+        this.enableTrace = true;
     }
 
-    @Override
-    public void destroy() {
-        clear();
-        enableTrace = false;
+    /**
+     * 暂停记录轨迹
+     */
+    public void pauseTrace(){
+        this.enableTrace = false;
+    }
 
-        super.destroy();
+    /**
+     * 继续记录轨迹
+     */
+    public void continueTrace(){
+        this.enableTrace = true;
+    }
+
+    /**
+     * 结束记录轨迹
+     */
+    public void stopTrace(){
+        this.enableTrace = false;
+        saveData();
+        clear();
+    }
+
+    public List<LatLng> getPositionList() {
+        return positionList;
+    }
+
+    public long getTotalDistance() {
+        return totalDistance;
     }
 }
