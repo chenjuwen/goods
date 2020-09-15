@@ -1,8 +1,11 @@
 package com.heasy.goods;
 
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -29,13 +32,19 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
 
         //activity设置属性： android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+
         //隐藏android的标题栏
         //getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
         //        WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         //隐藏activity的actionBar
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
+
+        //23,vivo Y66,6.0.1
+        logger.info(">>>>> " + Build.VERSION.SDK_INT + ","
+                + android.os.Build.MODEL + ","
+                + android.os.Build.VERSION.RELEASE);
 
         //HeasyApplication
         HeasyApplication heasyApplication = (HeasyApplication)getApplication();

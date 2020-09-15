@@ -37,7 +37,7 @@
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
-            android:theme="@style/Base.Theme.AppCompat"></activity>
+            android:theme="@style/TranslucentTheme"></activity>
 
         <activity
             android:name="com.heasy.goods.StartActivity"

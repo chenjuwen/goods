@@ -120,3 +120,8 @@
 -keep class mapsdkvi.com.** {*;}
 -dontwarn com.baidu.**
 
+-keep class rx.** {*;}
+-dontwarn rx.**
+
+-keep class org.** {*;}
+-dontwarn org.**
