@@ -125,3 +125,28 @@
 
 -keep class org.** {*;}
 -dontwarn org.**
+
+-keep class com.googlecode.** {*;}
+-dontwarn com.googlecode.**
+
+-keep class com.google.** {*;}
+-dontwarn com.google.**
+
+-keep class okio.** {*;}
+-dontwarn okio.**
+
+-keep class okhttp3.** {*;}
+-dontwarn okhttp3.**
+
+-keep class ch.** {*;}
+-dontwarn ch.**
+
+-keep class com.alibaba.** {*;}
+-dontwarn com.alibaba.**
+
+-keep class de.** {*;}
+-dontwarn de.**
+
+-keep class net.sqlcipher.** {*;}
+-dontwarn net.sqlcipher.**
+

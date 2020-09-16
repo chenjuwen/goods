@@ -5,9 +5,9 @@ android {
     signingConfigs {
         release {
             try {
-                keyAlias 'key0'
+                keyAlias 'goods'
                 keyPassword KEY_PASSWORD
-                storeFile file('../heasy.jks')
+                storeFile file('../goods.keystore')
                 storePassword STORE_PASSWORD
             } catch (ex) {
                 throw new InvalidUserDataException("You should define KEY_PASSWORD and STORE_PASSWORD in gradle.properties.")
