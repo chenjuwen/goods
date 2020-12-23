@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.activity;
 
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -6,6 +6,7 @@ import android.preference.PreferenceFragment;
 import android.preference.Preference;
 import android.support.annotation.Nullable;
 
+import com.heasy.map.R;
 import com.heasy.map.utils.PreferenceUtil;
 
 /**

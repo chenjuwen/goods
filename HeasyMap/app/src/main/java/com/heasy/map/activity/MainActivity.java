@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,6 +20,7 @@ import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
 import com.baidu.mapapi.model.LatLng;
+import com.heasy.map.R;
 import com.heasy.map.service.ConfigBean;
 import com.heasy.map.service.ConfigService;
 import com.heasy.map.service.MapLocationService;
@@ -172,18 +173,6 @@ public class MainActivity extends Activity implements SensorEventListener {
                 MyLocationConfiguration.LocationMode.NORMAL, true, null);
         mBaiduMap.setMyLocationConfiguration(myLocationConfiguration);
 
-        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                toolbarContainer.setVisibility(View.GONE);
-            }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-                return false;
-            }
-        });
-
         //单击地图
         mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
             @Override
@@ -280,6 +269,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         // 关闭定位图层
         mBaiduMap.setMyLocationEnabled(false);
+
         mMapView.onDestroy();
         mMapView = null;
 

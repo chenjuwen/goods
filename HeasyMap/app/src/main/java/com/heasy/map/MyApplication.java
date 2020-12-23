@@ -8,12 +8,11 @@ import com.baidu.mapapi.SDKInitializer;
 /**
  * Created by Administrator on 2020/3/27.
  */
-
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // 在使用 SDK 各组间之前初始化 context 信息，传入 ApplicationContext
+        // 在使用 SDK 各组件之前初始化 context 信息，传入 ApplicationContext
         // 默认本地个性化地图初始化方法
         SDKInitializer.initialize(this);
 

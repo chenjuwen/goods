@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.activity;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,17 +15,16 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptor;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.heasy.map.R;
 import com.heasy.map.service.RouteTraceService;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class RouteTraceActivity extends AppCompatActivity implements SensorEventListener, View.OnClickListener {
-    public static final String STATUS_START = "进行中";
+    public static final String STATUS_STARTING = "进行中";
     public static final String STATUS_PAUSE = "暂停";
 
     private RouteTraceService routeTraceService;
@@ -76,7 +75,7 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
         handler = new Handler(){
             @Override
             public void handleMessage(Message message) {
-                if(status.equalsIgnoreCase(STATUS_START)) {
+                if(status.equalsIgnoreCase(STATUS_STARTING)) {
                     int what = message.what;
                     if (what == 1) {
                         txtTimes.setText(usedTime + "秒");
@@ -129,7 +128,7 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
 
                 usedTime = 0;
                 distance = 0;
-                status = STATUS_START;
+                status = STATUS_STARTING;
                 startTime = new Date();
 
                 txtStatus.setText(status);
@@ -163,7 +162,7 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
                 btnStop.setVisibility(View.VISIBLE);
                 btnContinue.setVisibility(View.GONE);
 
-                status = STATUS_START;
+                status = STATUS_STARTING;
 
                 txtStatus.setText(status);
                 break;
@@ -259,7 +258,7 @@ public class RouteTraceActivity extends AppCompatActivity implements SensorEvent
                     TimeUnit.MILLISECONDS.sleep(1000);
 
                     //暂停时不算时间
-                    if(status.equalsIgnoreCase(STATUS_START)) {
+                    if(status.equalsIgnoreCase(STATUS_STARTING)) {
                         ++usedTime;
                         distance = routeTraceService.getTotalDistance();
 

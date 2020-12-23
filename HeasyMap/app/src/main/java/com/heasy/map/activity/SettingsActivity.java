@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.activity;
 
 import android.app.Activity;
 import android.os.Bundle;

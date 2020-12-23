@@ -1,4 +1,4 @@
-package com.heasy.map;
+package com.heasy.map.activity;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -17,6 +17,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration;
+import com.heasy.map.R;
 import com.heasy.map.service.CompassLocationService;
 import com.heasy.map.service.ServiceEngine;
 

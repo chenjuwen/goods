@@ -37,7 +37,7 @@
             android:value="VYYW5khvAehKFMzc01e35B98b2G8HD7D" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask">
@@ -53,9 +53,9 @@
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".CompassActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".RouteTraceActivity"></activity>
+        <activity android:name=".activity.CompassActivity" />
+        <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.RouteTraceActivity"></activity>
     </application>
 
 </manifest>
